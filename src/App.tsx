@@ -4,7 +4,7 @@ import ResetPassword from "./pages/Reset-password";
 function App() {
   return (
     <Routes>
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/" index element={<ResetPassword />} />
     </Routes>
   );
 }
