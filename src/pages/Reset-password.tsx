@@ -9,15 +9,24 @@ import {
   type ResetPasswordForm,
 } from "../validation/reset-password-schema";
 
+type messageType = {
+  success: boolean;
+  message: string;
+};
+
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<messageType>({
+    message: "",
+    success: true,
+  });
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordForm>({
     resolver: zodResolver(resetPasswordSchema),
@@ -26,7 +35,7 @@ export default function ResetPassword() {
   const onSubmit = async (data: ResetPasswordForm) => {
     try {
       if (!token) {
-        setMessage("Token is missing!");
+        setMessage({ message: "Invalid Token", success: false });
         return;
       }
       console.log(import.meta.env.VITE_BASE_URL);
@@ -36,9 +45,11 @@ export default function ResetPassword() {
         password: data.password,
       });
 
-      setMessage(result.message);
+      setMessage({ message: result.message, success: result.success });
     } catch (error: any) {
       setMessage(error?.response?.data?.errors || "Something went wrong!");
+    } finally {
+      reset();
     }
   };
 
@@ -85,7 +96,11 @@ export default function ResetPassword() {
           </button>
         </form>
 
-        {message && <p className="text-sm text-red-500">{message}</p>}
+        {!message.success && message.message !== "" ? (
+          <p className="text-sm text-red-500">{message.message}</p>
+        ) : (
+          <p className="text-lg mt-2 text-green-500 ">{message.message}</p>
+        )}
       </div>
     </div>
   );

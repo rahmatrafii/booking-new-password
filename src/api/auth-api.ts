@@ -5,6 +5,7 @@ export interface ResetPasswordRequest {
 
 export interface ResetPasswordResponse {
   message: string;
+  success: boolean;
 }
 
 export const resetPassword = async (
